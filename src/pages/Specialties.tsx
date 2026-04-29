@@ -5,7 +5,7 @@ import { CheckCircle2, ChevronRight, Activity, Stethoscope, Smile, Weight, Heart
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 
-const WHATSAPP_NUMBER = '919876543210';
+const WHATSAPP_NUMBER = '1234567890';
 
 const icons: Record<string, any> = {
   Activity, Stethoscope, Smile, Weight, HeartPulse, Eye, Zap, Search,

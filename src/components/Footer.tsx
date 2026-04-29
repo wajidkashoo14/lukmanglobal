@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, ShieldCheck } from 'lucide-react';
 
-const WHATSAPP_NUMBER = '919876543210';
+const WHATSAPP_NUMBER = '1234567890';
 const WHATSAPP_MSG = encodeURIComponent('Hello! I need medical assistance. Please help.');
 
 export default function Footer() {
