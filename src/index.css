@@ -1,71 +1,164 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&display=swap');
 @import "tailwindcss";
+@import "tw-animate-css";
 
+/* ─── Design tokens ─────────────────────────────────────────── */
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Outfit", sans-serif;
+  --font-serif:   "DM Serif Display", Georgia, serif;
+  --font-sans:    "DM Sans", ui-sans-serif, system-ui, sans-serif;
 
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
+  /* Primary palette — deep forest green (trust, healing, life) */
+  --color-forest-950: #0a1a14;
+  --color-forest-900: #0f2a1e;
+  --color-forest-800: #163d2b;
+  --color-forest-700: #1e5538;
+  --color-forest-600: #286847;
+  --color-forest-500: #2d7a52;
+  --color-forest-400: #3d9e6b;
+  --color-forest-300: #60bf8a;
+  --color-forest-200: #96d9b0;
+  --color-forest-100: #d0f0e0;
+  --color-forest-50:  #edfaf3;
 
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
+  /* Warm gold accent */
+  --color-gold-600:   #b8860b;
+  --color-gold-500:   #d4a017;
+  --color-gold-400:   #e8b830;
+  --color-gold-300:   #f5d060;
+  --color-gold-100:   #fef9e7;
+
+  /* Warm neutrals */
+  --color-stone-950:  #100f0e;
+  --color-stone-900:  #1c1a18;
+  --color-stone-800:  #2e2b27;
+  --color-stone-700:  #44403a;
+  --color-stone-600:  #5c5750;
+  --color-stone-500:  #787168;
+  --color-stone-400:  #968d83;
+  --color-stone-300:  #b8b0a5;
+  --color-stone-200:  #d8d2cb;
+  --color-stone-100:  #ede9e3;
+  --color-stone-50:   #faf8f5;
+
+  /* Cream canvas */
+  --color-cream:      #fdf9f4;
+  --color-cream-dark: #f5efe6;
+
+  --color-background: var(--color-cream);
+  --color-foreground: var(--color-stone-900);
+  --radius: 0.5rem;
 }
 
+/* ─── Base reset ────────────────────────────────────────────── */
 @layer base {
-  h1, h2, h3, h4 {
-    font-family: var(--font-display);
+  *, *::before, *::after { box-sizing: border-box; margin: 0; }
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-cream);
+    color: var(--color-stone-900);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 400; letter-spacing: -0.01em; }
+  img, video { max-width: 100%; height: auto; display: block; }
+  a { -webkit-tap-highlight-color: transparent; }
+  button { -webkit-tap-highlight-color: transparent; }
+}
+
+/* ─── Tailwind compat ───────────────────────────────────────── */
+@layer base {
+  * { outline-color: var(--color-forest-400); }
+}
+
+/* ─── Scrollbar hide ────────────────────────────────────────── */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ─── WhatsApp pulse ────────────────────────────────────────── */
+@keyframes wa-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(37,211,102,.55); }
+  60%      { box-shadow: 0 0 0 14px rgba(37,211,102,0); }
+}
+.wa-pulse { animation: wa-pulse 2.4s ease-in-out infinite; }
+
+/* ─── Grain texture overlay (for hero) ─────────────────────── */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: 0.5;
+}
+
+/* ─── Divider ornament ──────────────────────────────────────── */
+.ornament {
+  display: flex; align-items: center; gap: 12px;
+  color: var(--color-forest-400);
+}
+.ornament::before, .ornament::after {
+  content: ""; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, currentColor, transparent);
+}
+
+/* ─── Subtle card lift ──────────────────────────────────────── */
+.card-lift {
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1),
+              box-shadow 0.35s cubic-bezier(0.22,1,0.36,1);
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 64px -12px rgba(15,42,30,0.14);
+}
+
+/* ─── Mobile bottom bar safe area ──────────────────────────── */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobile-bar-safe {
+    height: calc(62px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
+/* ─── Alias: noise = grain ─────────────────────────────────── */
+.noise::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: 0.4;
+}
+
+/* ─── Brand CSS vars for legacy page compat ─────────────────── */
 :root {
-  --background: 210 40% 98%;
-  --foreground: 222.2 47.4% 11.2%;
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 47.4% 11.2%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 47.4% 11.2%;
-  --primary: 221.2 83.2% 53.3%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 221.2 83.2% 53.3%;
-  --radius: 1rem;
+  --brand-forest:    #0f2a1e;
+  --brand-forest-2:  #163d2b;
+  --brand-ink:       #1c1a18;
+  --brand-gold:      #d4a017;
+  --brand-gold-lt:   #e8b830;
+  --brand-ivory:     #fdf9f4;
+  --brand-warm:      #f5efe6;
 }
-@import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
-@layer base {
-  * {
-    @apply border-[hsl(var(--border))] outline-ring/50;
-    }
-  body {
-    @apply bg-background text-foreground;
-    }
-  html {
-    @apply font-sans;
-    }
+/* ─── Shimmer gold button ───────────────────────────────────── */
+.shimmer-gold {
+  background: linear-gradient(135deg, #b8860b 0%, #d4a017 40%, #e8b830 60%, #b8860b 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s ease-in-out infinite;
+  box-shadow: 0 4px 20px rgba(212,160,23,0.35);
 }
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ─── Italic serif utility ──────────────────────────────────── */
+.font-serif-italic { font-family: var(--font-serif); font-style: italic; }
