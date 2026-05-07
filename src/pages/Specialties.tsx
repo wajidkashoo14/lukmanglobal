@@ -5,11 +5,36 @@ import { ArrowRight, CheckCircle2, ChevronRight, Phone, Star, Award, Users, Cloc
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 
-const emojis: Record<string,string> = {
-  spine:'🦴', oncology:'🎗️', ivf:'👶', cosmetic:'✨',
-  gynaecology:'💜', 'weight-loss':'⚡', 'pain-management':'🩺',
-  'health-packages':'🔬', 'cancer-screening':'🧬',
+/* Real medical photography — specialty detail page headers */
+const specImages: Record<string, string> = {
+  spine:              'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=1200&q=85',
+  oncology:           'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=1200&q=85',
+  ivf:                'https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=1200&q=85',
+  cosmetic:           'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1200&q=85',
+  gynaecology:        'https://images.unsplash.com/photo-1666214280557-f1b5022eb634?w=1200&q=85',
+  'weight-loss':      'https://images.unsplash.com/photo-1551076805-e1869033e561?w=1200&q=85',
+  'pain-management':  'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=1200&q=85',
+  'health-packages':  'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1200&q=85',
+  'cancer-screening': 'https://images.unsplash.com/photo-1581093458791-9f3c3250a8b0?w=1200&q=85',
 };
+
+/*
+  Additional services — photo-card images matching the screenshot exactly:
+  robotic arm = urology, laser eye = ophthalmology,
+  skin laser = dermatology, heart anatomy = paediatrics
+*/
+const additionalImages: Record<string, string> = {
+  cardiology:    'https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?w=700&q=80',
+  neurology:     'https://images.unsplash.com/photo-1559757175-5700dde675bc?w=700&q=80',
+  orthopaedic:   'https://images.unsplash.com/photo-1530497610245-94d3c16cda28?w=700&q=80',
+  transplant:    'https://images.unsplash.com/photo-1551884170-09fb70a3a2ed?w=700&q=80',
+  urology:       'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=700&q=80',
+  ophthalmology: 'https://images.unsplash.com/photo-1516069677018-378515003435?w=700&q=80',
+  dermatology:   'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=700&q=80',
+  paediatrics:   'https://images.unsplash.com/photo-1628771065518-0d82f1938462?w=700&q=80',
+};
+
+const FALLBACK = 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=700&q=80';
 
 /* Discharge & follow-up per specialty */
 const clinicalMeta: Record<string, {discharge:string; language:string; team:string}> = {
@@ -141,40 +166,45 @@ export default function Specialties() {
                   <div className="h-1.5 w-full"
                     style={{background:spec.discount?'linear-gradient(90deg,#d4a017,#e8b830)':'linear-gradient(90deg,#1e5538,#3d9e6b)'}}/>
 
-                  {/* Header */}
-                  <div className="p-5 sm:p-7 md:p-10"
-                    style={{background:'linear-gradient(135deg,#fdf9f4,#f5faf7)',borderBottom:'1px solid #e8e2da'}}>
-                    <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6 md:gap-8">
-                      <div className="flex items-center gap-4 sm:block">
-                        <span className="text-4xl sm:text-5xl shrink-0">{emojis[spec.id]||'🏥'}</span>
-                        {spec.discount && (
-                          <div className="sm:hidden px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex"
-                            style={{background:'#fef9e7',color:'#b8860b',border:'1px solid rgba(184,134,11,.2)'}}>
-                            50% Off Health Checks
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
+                  {/* Photo banner header — full-width image with text overlay */}
+                  <div className="relative h-[180px] sm:h-[220px] md:h-[240px] overflow-hidden">
+                    {/* Background image */}
+                    <img
+                      src={specImages[spec.id]}
+                      alt={spec.name}
+                      className="w-full h-full object-cover object-center"
+                      loading="lazy"
+                      onError={e=>{
+                        (e.target as HTMLImageElement).style.display='none';
+                      }}
+                    />
+                    {/* Dark gradient overlay — stronger on left for text legibility */}
+                    <div className="absolute inset-0"
+                      style={{background:'linear-gradient(to right, rgba(10,26,20,0.90) 0%, rgba(10,26,20,0.65) 50%, rgba(10,26,20,0.20) 100%)'}}/>
+
+                    {/* Text on top of image */}
+                    <div className="absolute inset-0 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-0 p-5 sm:p-7 md:p-10">
+                      <div className="flex-1">
                         <div className="flex flex-wrap items-center gap-3 mb-2">
-                          <h2 className="font-serif text-2xl sm:text-3xl" style={{color:'#0f2a1e'}}>{spec.name}</h2>
+                          <h2 className="font-serif text-2xl sm:text-3xl text-white leading-tight">{spec.name}</h2>
                           {spec.discount && (
-                            <div className="hidden sm:inline-flex px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
-                              style={{background:'#fef9e7',color:'#b8860b',border:'1px solid rgba(184,134,11,.2)'}}>
+                            <div className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
+                              style={{background:'rgba(212,160,23,0.9)',color:'#fff'}}>
                               50% Off Health Checks
                             </div>
                           )}
                         </div>
-                        <p className="text-[14px] sm:text-[15px] leading-relaxed" style={{color:'#5c5750'}}>{spec.overview}</p>
+                        <p className="text-[13px] sm:text-sm max-w-lg leading-relaxed" style={{color:'rgba(255,255,255,0.7)'}}>{spec.overview}</p>
                       </div>
-                      <div className="flex sm:flex-col gap-2.5 sm:gap-3 shrink-0">
+                      <div className="flex sm:flex-col gap-2.5 sm:gap-3 sm:ml-6 shrink-0">
                         <a href={waURL(waMsg)} target="_blank" rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-2 text-[13px] sm:text-sm font-semibold text-white px-4 sm:px-5 py-3 rounded-full transition-all hover:brightness-110 flex-1 sm:flex-none"
-                          style={{background:'#25d366',boxShadow:'0 2px 10px rgba(37,211,102,.3)'}}>
+                          className="flex items-center justify-center gap-2 text-[13px] font-semibold text-white px-4 sm:px-5 py-2.5 rounded-full transition-all hover:brightness-110 flex-1 sm:flex-none"
+                          style={{background:'#25d366',boxShadow:'0 2px 10px rgba(37,211,102,.4)'}}>
                           <WaIcon/> WhatsApp
                         </a>
                         <Link to="/contact"
-                          className="flex items-center justify-center text-[13px] sm:text-sm font-semibold text-white px-4 sm:px-5 py-3 rounded-full transition-all hover:brightness-110 flex-1 sm:flex-none"
-                          style={{background:'#1e5538',boxShadow:'0 2px 10px rgba(30,85,56,.25)'}}>
+                          className="flex items-center justify-center text-[13px] font-semibold px-4 sm:px-5 py-2.5 rounded-full transition-all hover:brightness-110 flex-1 sm:flex-none"
+                          style={{background:'rgba(255,255,255,0.15)',color:'white',border:'1.5px solid rgba(255,255,255,0.4)',backdropFilter:'blur(4px)'}}>
                           Consult Now
                         </Link>
                       </div>
@@ -308,34 +338,85 @@ export default function Specialties() {
         </div>
       </div>
 
-      {/* ── MORE SERVICES ─────────────────────────────────────── */}
-      <section className="py-14 sm:py-20 pb-24 sm:pb-20" style={{background:'#0f2a1e',borderTop:'1px solid rgba(255,255,255,.06)'}}>
+      {/* ── MORE DISCIPLINES — photo-card grid (matches screenshot) ── */}
+      <section className="py-14 sm:py-20 pb-24 sm:pb-20" style={{background:'#faf8f5',borderTop:'1px solid #e8e2da'}}>
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-          <div className="text-center mb-8 sm:mb-10">
-            <div className="flex items-center gap-3 mb-4 justify-center">
-              <div className="h-px w-8" style={{background:'rgba(232,184,48,.5)'}}/>
-              <span className="text-[11px] font-semibold uppercase tracking-[.2em]" style={{color:'#d4a017'}}>Beyond Our Core Specialities</span>
-              <div className="h-px w-8" style={{background:'rgba(232,184,48,.5)'}}/>
+
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 gap-4">
+            <div>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-px w-8 shrink-0" style={{background:'#d4a017'}}/>
+                <span className="text-[11px] font-semibold uppercase tracking-[.2em]" style={{color:'#d4a017'}}>Beyond Our Core Specialities</span>
+              </div>
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl" style={{color:'#0f2a1e'}}>
+                More Disciplines<br/><em className="italic" style={{color:'#286847'}}>We Cover</em>
+              </h2>
+              <p className="text-[13px] mt-2" style={{color:'#787168'}}>
+                Every major discipline, across 150+ partner hospitals and specialists.
+              </p>
             </div>
-            <h2 className="font-serif text-2xl sm:text-3xl text-white mb-2">More Disciplines We Cover</h2>
-            <p className="text-[13px] sm:text-sm" style={{color:'#96d9b0'}}>Every major discipline, across 150+ partner hospitals and specialists.</p>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3">
-            {additionalServices.map((s,i)=>(
-              <motion.div key={s.id} initial={{opacity:0}} whileInView={{opacity:1}} viewport={{once:true}} transition={{delay:i*.04}}
-                className="p-4 sm:p-5 rounded-xl transition-all hover:scale-[1.02] cursor-pointer"
-                style={{background:'rgba(255,255,255,.06)',border:'1px solid rgba(255,255,255,.1)'}}>
-                <p className="font-semibold text-[13px] sm:text-sm text-white mb-1 leading-snug">{s.name}</p>
-                <p className="text-[11px] leading-relaxed" style={{color:'#96d9b0'}}>{s.treatments.slice(0,2).join(' · ')}</p>
-              </motion.div>
-            ))}
-          </div>
-          <div className="mt-10 sm:mt-12 text-center">
             <Link to="/contact"
-              className="inline-flex items-center gap-2 font-semibold text-[15px] px-8 py-4 rounded-full transition-all hover:brightness-110 text-[#0f2a1e]"
-              style={{background:'#fff',boxShadow:'0 4px 20px rgba(0,0,0,.2)'}}>
+              className="inline-flex items-center gap-2 font-semibold text-[14px] px-7 py-3.5 rounded-full transition-all hover:brightness-110 text-white shrink-0"
+              style={{background:'#1e5538',boxShadow:'0 4px 16px rgba(30,85,56,.25)'}}>
               Speak to a Specialist <ArrowRight className="h-4 w-4"/>
             </Link>
+          </div>
+
+          {/*
+            Photo-card grid — identical style to the reference screenshot:
+            • White card, rounded corners
+            • Left half: bold title + first treatment + gold rule
+            • Right half: full-bleed clinical photo fading left into white
+            • 2 columns on mobile, 4 on desktop
+          */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+            {additionalServices.map((svc,i)=>(
+              <motion.div key={svc.id}
+                initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}}
+                viewport={{once:true}} transition={{delay:i*0.05}}>
+                <Link to="/contact" className="block group">
+                  <div
+                    className="relative rounded-2xl overflow-hidden bg-white hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
+                    style={{height:'170px', border:'1px solid #e8e2da', boxShadow:'0 2px 12px rgba(15,42,30,0.05)'}}>
+
+                    {/* Left text panel */}
+                    <div className="absolute inset-y-0 left-0 z-10 flex flex-col justify-between p-4 sm:p-5"
+                      style={{width:'52%'}}>
+                      <div>
+                        <h3 className="font-serif text-[0.92rem] sm:text-[0.95rem] leading-[1.25] tracking-tight"
+                          style={{color:'#1c1a18', fontWeight:700}}>
+                          {svc.name}
+                        </h3>
+                        <p className="mt-1.5 text-[10px] sm:text-[11px] leading-snug"
+                          style={{color:'#787168'}}>
+                          {svc.treatments[0]}
+                        </p>
+                      </div>
+                      {/* Gold rule */}
+                      <div className="w-6 h-[2px] rounded-full" style={{background:'#d4a017'}}/>
+                    </div>
+
+                    {/* Right photo — fades left into white exactly like screenshot */}
+                    <div className="absolute inset-y-0 right-0 overflow-hidden" style={{width:'55%'}}>
+                      {/* Fade gradient */}
+                      <div className="absolute inset-y-0 left-0 z-10 pointer-events-none"
+                        style={{
+                          width:'64px',
+                          background:'linear-gradient(to right, #ffffff 0%, rgba(255,255,255,0.9) 35%, rgba(255,255,255,0) 100%)',
+                        }}/>
+                      <img
+                        src={additionalImages[svc.id] ?? FALLBACK}
+                        alt={`${svc.name} treatment in India`}
+                        className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.05]"
+                        loading="lazy"
+                        onError={e=>{ (e.target as HTMLImageElement).src = FALLBACK; }}
+                      />
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
